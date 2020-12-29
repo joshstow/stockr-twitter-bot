@@ -20,5 +20,4 @@ def Scrape(ticker):
     adj_close = round(df['Adj Close'].tolist()[0], 2)
     # Construct dictionary
     data = {'date':date,'high':high,'low':low,'open':open,'close':close,'volume':volume,'adj_close':adj_close}
-    print(data)
     return data
