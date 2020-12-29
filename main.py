@@ -3,6 +3,7 @@ import json
 import tweepy
 import csv
 import time
+from scraper import Scrape
 
 # Declare constant variables
 BOT_USER = 'StockrAI'
@@ -44,9 +45,12 @@ def send_tweets(api, mentions):
     Publish tweets as responses to mentions
     """
     for mention in reversed(mentions):  # Reverse list to have most recent tweets first
+        ### Add test for ticker
         if mention['username'] != BOT_USER:
             print(f"""++ New mention @ {mention['timestamp']} {{'id': {mention['id']}, 'username': '{mention['username']}', 'text': '{mention['text']}'}}""")
-            api.update_status(f"""@{mention['username']} This is a response""", mention['id'])  # Post tweet
+            body = construct_tweet(mention['username'], 'AAPL')
+            # api.update_status(f"""@{mention['username']} This is a response""", mention['id'])  # Post tweet
+            api.update_status(body, mention['id'])  # Post tweet
             log(mention)
 
 def get_last_id():
@@ -65,6 +69,23 @@ def log(mention):
         writer = csv.writer(f)
         line = [mention['timestamp'],mention['id'],mention['username'],mention['text']]
         writer.writerow(line)
+
+def construct_tweet(username, ticker):
+    """
+    Create tweet body with necessary data and formatting
+    """
+    data = Scrape(ticker)
+    body = f"""
+@{username}
+${ticker} data from {data['date']}
+High: {data['high']}
+Low: {data['low']}
+Open: {data['open']}
+Close: {data['close']}
+Volume: {data['volume']}
+Adjusted Close: {data['adj_close']}
+"""
+    return body
 
 if __name__ == '__main__':
     auth = generate_auth()
