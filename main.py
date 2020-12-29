@@ -9,7 +9,6 @@ BOT_USER = 'StockrAI'
 WAIT_TIME = 15
 SECRETS_FILE = 'secrets.json'
 LOG_FILE = 'tweet_log.csv'
-ID_FILE = 'last_id.txt'
 
 def load_secrets():
     """
@@ -49,25 +48,14 @@ def send_tweets(api, mentions):
             print(f"""++ New mention @ {mention['timestamp']} {{'id': {mention['id']}, 'username': '{mention['username']}', 'text': '{mention['text']}'}}""")
             api.update_status(f"""@{mention['username']} This is a response""", mention['id'])  # Post tweet
             log(mention)
-    # Do nothing if no new mentions found
-    try:
-        update_last_id(mention['id'])
-    except:
-        return
 
 def get_last_id():
     """
     Retrieve last tweet ID from text file
     """
-    with open(ID_FILE, 'r') as f:
-        return f.read()
-
-def update_last_id(id):
-    """
-    Overwrite text file with most recent tweet ID
-    """
-    with open(ID_FILE, 'w') as f:
-        f.write(str(id))
+    with open(LOG_FILE, 'r') as f: 
+        data = f.readlines()[-1].split(',')
+        return data[1]
 
 def log(mention):
     """
