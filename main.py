@@ -3,6 +3,7 @@ import json
 import tweepy
 import csv
 import time
+import re
 from scraper import Scrape
 
 # Declare constant variables
@@ -45,11 +46,10 @@ def send_tweets(api, mentions):
     Publish tweets as responses to mentions
     """
     for mention in reversed(mentions):  # Reverse list to have most recent tweets first
-        ### Add test for ticker
-        if mention['username'] != BOT_USER:
+        ticker = scan_tweet(mention['text'])
+        if mention['username'] != BOT_USER and ticker != None:
             print(f"""++ New mention @ {mention['timestamp']} {{'id': {mention['id']}, 'username': '{mention['username']}', 'text': '{mention['text']}'}}""")
-            body = construct_tweet(mention['username'], 'AAPL')
-            # api.update_status(f"""@{mention['username']} This is a response""", mention['id'])  # Post tweet
+            body = construct_tweet(mention['username'], ticker) # Construct body of tweet
             api.update_status(body, mention['id'])  # Post tweet
             log(mention)
 
@@ -70,6 +70,17 @@ def log(mention):
         line = [mention['timestamp'],mention['id'],mention['username'],mention['text']]
         writer.writerow(line)
 
+def scan_tweet(text):
+    """
+    Search for stock ticker in tweet
+    """
+    print(text)
+    try:
+        ticker = re.findall(r'\$([a-zA-Z]{1,4})', text)[0]
+        return ticker
+    except:
+        return None
+    
 def construct_tweet(username, ticker):
     """
     Create tweet body with necessary data and formatting
@@ -77,7 +88,7 @@ def construct_tweet(username, ticker):
     data = Scrape(ticker)
     body = f"""
 @{username}
-${ticker} data from {data['date']}
+${ticker} - {data['date']}
 High: {data['high']}
 Low: {data['low']}
 Open: {data['open']}
