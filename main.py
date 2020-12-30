@@ -1,5 +1,6 @@
 # Import dependencies
-import json
+#import json
+import os
 import tweepy
 import csv
 import time
@@ -7,26 +8,30 @@ import re
 from scraper import Scrape
 
 # Declare constant variables
+API_KEY = os.environ['API_KEY']
+API_KEY_SECRET = os.environ['API_KEY_SECRET']
+ACCESS_TOKEN = os.environ['ACCESS_TOKEN']
+ACCESS_TOKEN_SECRET = os.environ['ACCESS_TOKEN_SECRET']
 BOT_USER = 'StockrAI'
 WAIT_TIME = 15
-SECRETS_FILE = 'secrets.json'
+#SECRETS_FILE = 'secrets.json'
 LOG_FILE = 'tweet_log.csv'
 
-def load_secrets():
-    """
-    Load secret keys from json file
-    """
-    with open(SECRETS_FILE, 'r') as f:
-        secrets = json.load(f)
-    return secrets
+# def load_secrets():
+#     """
+#     Load secret keys from json file
+#     """
+#     with open(SECRETS_FILE, 'r') as f:
+#         secrets = json.load(f)
+#     return secrets
 
 def generate_auth():
     """
     Set up authentication using keys
     """
-    secrets = load_secrets()
-    auth = tweepy.OAuthHandler(secrets['API_KEY'], secrets['API_KEY_SECRET'])
-    auth.set_access_token(secrets['ACCESS_TOKEN'], secrets['ACCESS_TOKEN_SECRET'])
+    #secrets = load_secrets()
+    auth = tweepy.OAuthHandler(API_KEY, API_KEY_SECRET)
+    auth.set_access_token(ACCESS_TOKEN, ACCESS_TOKEN_SECRET)
     return auth
 
 def create_api(auth):
