@@ -47,7 +47,7 @@ def create_api(auth):
         print(e)
     return api
 
-def send_tweets(api, mentions):
+def send_tweets(api, mentions, LAST_ID):
     """
     Publish tweets as responses to mentions
     """
@@ -59,7 +59,7 @@ def send_tweets(api, mentions):
             api.update_status(body, mention['id'])  # Post tweet
             #log(mention)
             LAST_ID = mention['id']
-    return LAST_ID
+    return LAST_ID  # Return same last ID if no new mentions
 
 # def get_last_id():
 #     """
@@ -118,5 +118,5 @@ if __name__ == '__main__':
     # Constantly scan for new tweets mentioning bot account
     while True:
         mentions = [{'timestamp':mention.created_at,'id':mention.id,'username':mention.user.screen_name,'text':mention.text} for mention in api.mentions_timeline(since_id=LAST_ID)]  # Create list of dictionaries for each mention tweet since last ID
-        LAST_ID = send_tweets(api, mentions)  # Post tweet replies and get last ID
+        LAST_ID = send_tweets(api, mentions, LAST_ID)  # Post tweet replies and get last ID
         time.sleep(WAIT_TIME)
