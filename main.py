@@ -58,7 +58,8 @@ def send_tweets(api, mentions):
             body = construct_tweet(mention['username'], ticker) # Construct body of tweet
             api.update_status(body, mention['id'])  # Post tweet
             #log(mention)
-    return mention['id']
+            LAST_ID = mention['id']
+    return LAST_ID
 
 # def get_last_id():
 #     """
