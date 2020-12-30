@@ -74,7 +74,6 @@ def scan_tweet(text):
     """
     Search for stock ticker in tweet
     """
-    print(text)
     try:
         ticker = re.findall(r'\$([a-zA-Z]{1,4})', text)[0]
         return ticker
@@ -85,16 +84,22 @@ def construct_tweet(username, ticker):
     """
     Create tweet body with necessary data and formatting
     """
-    data = Scrape(ticker)
-    body = f"""
+    try:
+        data = Scrape(ticker)
+        body = f"""
 @{username}
-${ticker} - {data['date']}
+${ticker.upper()} - {data['date']}
 High: {data['high']}
 Low: {data['low']}
 Open: {data['open']}
 Close: {data['close']}
 Volume: {data['volume']}
 Adjusted Close: {data['adj_close']}
+"""
+    except:
+        body = f"""
+@{username}
+Sorry, ${ticker.upper()} is not a supported stock :(
 """
     return body
 
